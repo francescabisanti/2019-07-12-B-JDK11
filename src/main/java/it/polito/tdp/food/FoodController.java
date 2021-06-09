@@ -5,9 +5,12 @@
 package it.polito.tdp.food;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.food.model.Food;
 import it.polito.tdp.food.model.Model;
+import it.polito.tdp.food.model.Vicino;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -41,7 +44,7 @@ public class FoodController {
     private Button btnSimula; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxFood"
-    private ComboBox<?> boxFood; // Value injected by FXMLLoader
+    private ComboBox<Food> boxFood; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -49,13 +52,35 @@ public class FoodController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Creazione grafo...");
+    	txtResult.appendText("Creazione grafo...\n");
+    	String pS= this.txtPorzioni.getText();
+    	int porzioni;
+    	try {
+    		porzioni=Integer.parseInt(pS);
+    		
+    	}catch(NumberFormatException e) {
+    		this.txtResult.setText("Inserisci un valore numerico valido!");
+    		return;
+    	}
+    	this.model.creaGrafo(porzioni);
+    	this.boxFood.getItems().addAll(model.getGrafo().vertexSet());
+    	this.txtResult.appendText("#VERTICI: "+this.model.getNvertici()+"\n");
+    	this.txtResult.appendText("#ARCHI: "+this.model.getNArchi()+"\n");
     }
 
     @FXML
     void doGrassi(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Analisi grassi...");
+    	txtResult.appendText("Analisi grassi...\n");
+    	Food selezionato= this.boxFood.getValue();
+    	List <Vicino> vicini= model.trovaVicini(selezionato);
+    	int conto=0;
+    	for(Vicino v: vicini) {
+    		if(conto<5) {
+    		this.txtResult.appendText(v.toString());
+    		conto++;
+    		}
+    	}
     }
 
     @FXML
